@@ -42,6 +42,16 @@ app.engine('handlebars', handlebars.engine())
 app.set('views', './src/views')
 app.set('view engine', 'handlebars')
 
+/*app.all('*', (req,res,next) => {
+    const err = new Error(`No se pudo encontrar ${req.originalUrl} en el servidor`)
+    err.status = 'fail'
+    err.statusCode= 404
+    next(err)
+    logger.http(`No se pudo encontrar ${req.originalUrl} en el servidor`)
+})
+*/
+
+
 try {
     await mongoose.connect(config.mongo.uri, {
         dbName: config.mongo.dbname,

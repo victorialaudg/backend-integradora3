@@ -38,6 +38,7 @@ const createLogger = env=> {
     }else{
         return winston.createLogger({
             levels: customWinstonOptions.levels,
+            //level: 'fatal',
             level: 'debug',
             transports: [
                 new winston.transports.Console({

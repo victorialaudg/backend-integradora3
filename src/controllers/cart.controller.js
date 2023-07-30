@@ -107,7 +107,6 @@ export const updateCartController = async (req, res) => {
             return res.status(404).json({ status: 'error', error: `Cart with id=${cid} Not found` })
         }
         const products = req.body.products
-        //start: validaciones del array enviado por body
         if (!products) {
             return res.status(400).json({ status: 'error', error: 'Field "products" is not optional' })
         }
@@ -127,7 +126,7 @@ export const updateCartController = async (req, res) => {
                 return res.status(400).json({ status: 'error', error: `Product with id=${products[index].product} doesnot exist. We cannot add this product to the cart with id=${cid}` })
             }
         }
-        //end: validaciones del array enviado por body
+
         cartToUpdate.products = products
        // const result = await cartModel.findByIdAndUpdate(cid, cartToUpdate, { returnDocument: 'after' })
        const result = await CartService.update(cid, cartToUpdate, { returnDocument: 'after' })
@@ -151,8 +150,8 @@ export const updateProductQtyFromCartController = async (req, res) => {
         if (productToUpdate === null) {
             return res.status(404).json({ status: 'error', error: `Product with id=${pid} Not found` })
         }
+
         const quantity = req.body.quantity
-        //start: validaciones de quantity enviado por body
         if (!quantity) {
             return res.status(400).json({ status: 'error', error: 'Field "quantity" is not optional' })
         }
@@ -168,7 +167,7 @@ export const updateProductQtyFromCartController = async (req, res) => {
         } else {
             cartToUpdate.products[productIndex].quantity = quantity
         }
-        //end: validaciones de quantity enviado por body
+
         //const result = await cartModel.findByIdAndUpdate(cid, cartToUpdate, { returnDocument: 'after' })
         const result = await CartService.update(cid, cartToUpdate, { returnDocument: 'after' })
         res.status(200).json({ status: 'success', payload: result })
@@ -211,14 +210,13 @@ export const purchaseController = async(req, res) => {
                 return res.status(400).json({ status: 'error', error: `Product with id=${cartToPurchase.products[index].product} does not exist. We cannot purchase this product` })
             }
             if (cartToPurchase.products[index].quantity <= productToPurchase.stock) {
-                //actualizamos el stock del producto que se está comprando
                 productToPurchase.stock -= cartToPurchase.products[index].quantity
                 await ProductService.update(productToPurchase._id, { stock: productToPurchase.stock })
-                //eliminamos (del carrito) los productos que se han comparado (en memoria)
+
                 productsAfterPurchase = productsAfterPurchase.filter(item => item.product.toString() !== cartToPurchase.products[index].product.toString())
-                //calculamos el amount (total del ticket)
+                //cálculo del amount (total del ticket)
                 amount += (productToPurchase.price * cartToPurchase.products[index].quantity)
-                //colocamos el producto en el Ticket (en memoria)
+                //se coloca el producto en el Ticket (en memoria)
                 productsToTicket.push({ product: productToPurchase._id, price: productToPurchase.price, quantity: cartToPurchase.products[index].quantity})
             }
         }
