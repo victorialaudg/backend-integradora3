@@ -56,6 +56,9 @@ export const addProductToCartController = async (req, res) => {
         if (productToAdd === null) {
             return res.status(404).json({ status: 'error', error: `Product with id=${pid} Not found` })
         }
+        if (productToAdd.owner === req.session.user.email) {
+            return res.status(400).json({ status: 'error', error: 'You cannot buy your own products' })
+        }
         const productIndex = cartToUpdate.products.findIndex(item => item.product == pid)
         if ( productIndex > -1) {
             cartToUpdate.products[productIndex].quantity += 1

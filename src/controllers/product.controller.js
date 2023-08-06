@@ -24,6 +24,7 @@ export const getProductByIdController = async (req, res) => {
 export const createProductController = async (req, res) => {
     try {
         const product = req.body
+        product.owner = req.session.user.email
         const result = await ProductService.create(product)
         const products = await ProductService.getAll()
         req.io.emit('updatedProducts', products)
@@ -37,6 +38,12 @@ export const udpateProductController = async (req, res) => {
     try {
         const id = req.params.pid
         const data = req.body
+        if (req.session.user.role === 'premium') {
+            const product = await ProductService.getById(id)
+            if (product.owner !== req.session.user.email) {
+                return res.status(403).json({ status: 'error', error: 'Not Authorized' })
+            }
+        }
         const result = await ProductService.update(id, data)
         if (result === null) {
             return res.status(404).json({ status: 'error', error: 'Not found' })
@@ -52,6 +59,12 @@ export const udpateProductController = async (req, res) => {
 export const deleteProductController = async (req, res) => {
     try {
         const id = req.params.pid
+        if (req.session.user.role === 'premium') {
+            const product = await ProductService.getById(id)
+            if (product.owner !== req.session.user.email) {
+                return res.status(403).json({ status: 'error', error: 'Not Authorized' })
+            }
+        }
         const result = await ProductService.delete(id)
         if (result === null) {
             return res.status(404).json({ status: 'error', error: 'Not found' })

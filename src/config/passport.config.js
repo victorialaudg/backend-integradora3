@@ -13,7 +13,7 @@ const initializePassport = () => {
         passReqToCallback: true,
         usernameField: 'email'
     }, async(req, username, password, done) => {
-        const { first_name, last_name, email, age } = req.body
+        const { first_name, last_name, email, age, role } = req.body
         try {
             const user = await UserModel.findOne({ email: username })
             if (user) {
@@ -24,7 +24,7 @@ const initializePassport = () => {
             const cartForNewUser = await CartModel.create({})
             const newUser = {
                 first_name, last_name, email, age, password: createHash(password), cart: cartForNewUser._id,
-                role: (email === 'adminCoder@coder.com') ? 'admin' : 'user'
+                role/*: (email === 'adminCoder@coder.com') ? 'admin' : 'user'*/
             }
             const result = await UserModel.create(newUser)
             return done(null, result)
@@ -66,7 +66,8 @@ const initializePassport = () => {
                 age: 0,
                 email: profile._json.email,
                 password: " ",
-                cart: cartForNewUser._id
+                cart: cartForNewUser._id,
+                role: 'premium'
             })
             return done(null, newUser)
         } catch(error) {

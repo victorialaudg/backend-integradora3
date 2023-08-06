@@ -59,6 +59,7 @@ const transport = nodemailer.createTransport({
         pass:'tdxiluhgbtlnjtps'
     }
 })
+
 app.get('/mail', async(req,res)=>{
     let result = await transport.sendMail({
         from: 'Coder Tests victorialau.dg@gmail.com',
