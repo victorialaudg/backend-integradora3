@@ -27,7 +27,8 @@ const createLogger = env=> {
     if(env==='PROD'){
         return winston.createLogger({
             levels: customWinstonOptions.levels,
-            level: 'info',
+            //level: 'info',
+            level: 'fatal',
             transports: [
                 new winston.transports.File({
                     filename:'errors.log',
@@ -38,8 +39,8 @@ const createLogger = env=> {
     }else{
         return winston.createLogger({
             levels: customWinstonOptions.levels,
-            //level: 'fatal',
-            level: 'debug',
+            level: 'fatal',
+            //level: 'debug',
             transports: [
                 new winston.transports.Console({
                     format: winston.format.combine(

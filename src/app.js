@@ -7,6 +7,7 @@ import session from 'express-session'
 import MongoStore from 'connect-mongo'
 import passport from "passport";
 import initializePassport from "./config/passport.config.js";
+import nodemailer from 'nodemailer';
 import logger from './logger.js'
 import config from './config/config.js'
 
@@ -50,7 +51,28 @@ app.set('view engine', 'handlebars')
     logger.http(`No se pudo encontrar ${req.originalUrl} en el servidor`)
 })
 */
-
+const transport = nodemailer.createTransport({
+    service:'gmail',
+    port:587,
+    auth:{
+        user:'victorialau.dg@gmail.com',
+        pass:'tdxiluhgbtlnjtps'
+    }
+})
+app.get('/mail', async(req,res)=>{
+    let result = await transport.sendMail({
+        from: 'Coder Tests victorialau.dg@gmail.com',
+        to: 'lauravictoria3229@gmail.com',
+        subject:'Correo de prueba',
+        html:`
+        <div>
+            <h1>Esto es un test</h1>
+            <p>Un test muy lindo</p>
+        </div>`,
+        attachments:[]
+    })
+    res.send({status:"success",result:"Email Sent"})
+})
 
 try {
     await mongoose.connect(config.mongo.uri, {
@@ -83,6 +105,7 @@ try {
     app.use('/products', viewsRouter)
     app.use('/carts', viewsRouter)
     app.use("/chat", chatRouter)
+    //app.use(errorMiddleware)
     
     Sockets(io)
 } catch (err) {
